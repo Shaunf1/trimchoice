@@ -49,23 +49,15 @@ const GEAR_CONFIG = {
 
 const DEFAULT_COLOR = '#7F8C8D';
 
-// Boxing glove images (Unsplash) — one per style tile
+// Gear images: paths relative to index.html (place files in assets/ folder)
+function assetPath(name) {
+  const base = document.querySelector('base')?.href ?? (window.location.href.replace(/[^/]*$/, ''));
+  return new URL(name, base).href;
+}
 const STYLE_IMAGES = {
-  gloves: [
-    'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=280&h=280&fit=crop',
-  ],
-  shorts: [
-    'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=280&h=280&fit=crop',
-  ],
-  boots: [
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=280&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=280&h=280&fit=crop',
-  ],
+  gloves: ['gloves.png', 'gloves.png', 'gloves.png'],
+  shorts: ['shorts.png', 'shorts.png', 'shorts.png'],
+  boots: ['boots.png', 'boots.png', 'boots.png'],
 };
 
 function createInitialStyles(gearType) {
@@ -134,13 +126,21 @@ function renderStyleTiles() {
 
   dom.styleTiles.innerHTML = styles.map((style, i) => {
     const selected = style.id === selectedId;
-    const imgSrc = images[i] || images[0];
+    const imgName = images[i] || images[0];
+    const imgSrc = assetPath('assets/' + imgName);
     return `
       <button type="button" class="style-tile ${selected ? 'selected' : ''}" data-style-id="${style.id}">
         <img class="style-tile-img" src="${imgSrc}" alt="${style.name}" />
+        <span class="style-tile-placeholder" aria-hidden="true">${style.name}</span>
       </button>
     `;
   }).join('');
+
+  dom.styleTiles.querySelectorAll('.style-tile-img').forEach(img => {
+    img.addEventListener('error', function () {
+      this.classList.add('tile-img-error');
+    });
+  });
 
   dom.styleTiles.querySelectorAll('.style-tile').forEach(btn => {
     btn.addEventListener('click', () => selectStyle(btn.dataset.styleId));

@@ -184,6 +184,28 @@ body {
   border-radius: 6px;
 }
 
+.style-tile-img.tile-img-error {
+  display: none !important;
+}
+
+.style-tile-placeholder {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  background: var(--bg-panel-subtle);
+  border-radius: 6px;
+}
+
+.style-tile .style-tile-img.tile-img-error + .style-tile-placeholder {
+  display: flex;
+}
+
 /* 3-segment color chip (used in edit view only) */
 .tile-chip {
   position: absolute;
