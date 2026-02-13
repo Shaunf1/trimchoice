@@ -49,9 +49,10 @@ const GEAR_CONFIG = {
 
 const DEFAULT_COLOR = '#7F8C8D';
 
-// Gear images: paths relative to index.html (place files in assets/ folder)
+// Gear images: resolve relative to current page so it works locally and on GitHub Pages
 function assetPath(name) {
-  const base = document.querySelector('base')?.href ?? (window.location.href.replace(/[^/]*$/, ''));
+  // Use document base URI so assets work from repo root or subpath (e.g. github.io/repo/)
+  const base = document.querySelector('base')?.href ?? (typeof document.baseURI !== 'undefined' ? document.baseURI : new URL('.', window.location.href).href);
   return new URL(name, base).href;
 }
 const STYLE_IMAGES = {
