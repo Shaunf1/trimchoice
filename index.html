@@ -29,46 +29,37 @@
         <div class="content-view content-view-styles" id="view-styles">
           <div class="content-header">
             <span class="content-label">BASE</span>
-            <button type="button" class="btn-edit-style" disabled>EDIT STYLE</button>
+            <button type="button" class="btn-edit-style" id="btn-edit-style">EDIT STYLE</button>
           </div>
           <div class="style-tiles" id="style-tiles">
             <!-- Tiles injected by app.js -->
           </div>
         </div>
 
-        <!-- View 2: Edit style (zone tabs + swatches + preview) -->
+        <!-- View 2: Edit style (Primary / Secondary / Trim colour sections) -->
         <div class="content-view content-view-edit" id="view-edit" hidden>
-          <div class="edit-header">
-            <button type="button" class="btn-back" id="btn-back">← Back</button>
-            <h2 class="edit-title">EDIT STYLE</h2>
-          </div>
-          <p class="edit-subtitle">SELECT AREA</p>
-          <div class="edit-zone-tabs" id="zone-tabs" role="tablist">
-            <!-- Zone tabs injected by app.js -->
-          </div>
-          <div class="edit-body">
-            <div class="swatch-section">
-              <div class="swatch-nav-row">
-                <button type="button" class="swatch-nav swatch-prev" id="swatch-prev" aria-label="Previous page">‹</button>
-                <div class="swatch-grid" id="swatch-grid">
-                  <!-- Swatches injected by app.js -->
-                </div>
-                <button type="button" class="swatch-nav swatch-next" id="swatch-next" aria-label="Next page">›</button>
-              </div>
-              <div class="swatch-dots" id="swatch-dots">
-                <!-- Dots injected by app.js -->
-              </div>
+          <div class="edit-modal-header">
+            <div class="edit-header-left">
+              <h2 class="edit-title" id="edit-title">EDIT STYLE</h2>
+              <span class="edit-tab-label" id="edit-tab-label">GLOVES</span>
             </div>
-            <div class="preview-section">
-              <div class="preview-label">PREVIEW</div>
-              <div class="preview-container" id="preview-container">
-                <!-- Preview shapes injected by app.js -->
-              </div>
-            </div>
+            <button type="button" class="edit-close" id="edit-close" aria-label="Close">×</button>
           </div>
-          <div class="edit-style-tiles" id="edit-style-tiles">
-            <!-- Mini style tiles with chips (injected by app.js) -->
+          <div class="edit-colour-sections">
+            <section class="colour-section">
+              <h3 class="colour-section-label">PRIMARY COLOUR</h3>
+              <div class="colour-section-grid" id="colour-primary" data-zone-index="0"></div>
+            </section>
+            <section class="colour-section">
+              <h3 class="colour-section-label">SECONDARY COLOUR</h3>
+              <div class="colour-section-grid" id="colour-secondary" data-zone-index="1"></div>
+            </section>
+            <section class="colour-section">
+              <h3 class="colour-section-label">TRIM COLOUR</h3>
+              <div class="colour-section-grid" id="colour-trim" data-zone-index="2"></div>
+            </section>
           </div>
+          <button type="button" class="btn-edit-return" id="btn-back">← RETURN</button>
         </div>
       </section>
 

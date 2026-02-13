@@ -18,7 +18,7 @@ const PALETTE = [
   { name: 'Tan', hex: '#D2B48C' },
 ];
 
-const SWATCHES_PER_PAGE = 8;
+const GEAR_LABELS = { gloves: 'GLOVES', shorts: 'SHORTS', boots: 'BOOTS' };
 
 const GEAR_CONFIG = {
   gloves: {
@@ -85,10 +85,6 @@ const state = {
     shorts: createInitialStyles('shorts'),
     boots: createInitialStyles('boots'),
   },
-  edit: {
-    activeZoneIndex: 0,
-    swatchPage: 0,
-  },
 };
 
 const dom = {
@@ -98,13 +94,12 @@ const dom = {
   viewStyles: null,
   viewEdit: null,
   btnBack: null,
-  zoneTabs: null,
-  swatchGrid: null,
-  swatchPrev: null,
-  swatchNext: null,
-  swatchDots: null,
-  previewContainer: null,
-  editStyleTiles: null,
+  editClose: null,
+  editTitle: null,
+  editTabLabel: null,
+  colourPrimary: null,
+  colourSecondary: null,
+  colourTrim: null,
 };
 
 function getSelectedStyleId() {
@@ -152,7 +147,9 @@ function renderStyleTiles() {
     btn.addEventListener('click', () => selectStyle(btn.dataset.styleId));
   });
 
-  dom.btnEditStyle.disabled = !selectedId;
+  if (dom.btnEditStyle) {
+    dom.btnEditStyle.disabled = !selectedId;
+  }
 }
 
 function selectStyle(styleId) {
@@ -162,157 +159,61 @@ function selectStyle(styleId) {
 }
 
 function enterEditView() {
-  const selectedId = getSelectedStyleId();
   const styles = getCurrentStyles();
-  if (!selectedId && styles.length) {
+  if (!getSelectedStyleId() && styles.length) {
     state.selectedStyleId[state.currentGearType] = styles[0].id;
     renderStyleTiles();
   }
   if (!getSelectedStyleId()) return;
-  state.edit.activeZoneIndex = 0;
-  state.edit.swatchPage = 0;
-  dom.viewStyles.hidden = true;
-  dom.viewEdit.hidden = false;
-  renderZoneTabs();
-  renderSwatchGrid();
-  renderSwatchDots();
-  renderPreview();
-  renderEditStyleTiles();
-  updateSwatchNavState();
+  if (!dom.viewEdit || !dom.viewStyles) return;
+  dom.viewStyles.setAttribute('hidden', '');
+  dom.viewEdit.removeAttribute('hidden');
+  dom.viewEdit.classList.add('visible');
+  if (dom.editTabLabel) dom.editTabLabel.textContent = GEAR_LABELS[state.currentGearType] || state.currentGearType.toUpperCase();
+  renderColourSections();
 }
 
 function exitEditView() {
-  dom.viewEdit.hidden = true;
-  dom.viewStyles.hidden = false;
+  dom.viewEdit.setAttribute('hidden', '');
+  dom.viewEdit.classList.remove('visible');
+  dom.viewStyles.removeAttribute('hidden');
   renderStyleTiles();
 }
 
-function renderZoneTabs() {
-  const config = getConfig();
-  const idx = state.edit.activeZoneIndex;
-  dom.zoneTabs.innerHTML = config.zones.map((z, i) =>
-    `<button type="button" class="zone-tab ${i === idx ? 'active' : ''}" data-zone-index="${i}" role="tab">${z.label}</button>`
-  ).join('');
-
-  dom.zoneTabs.querySelectorAll('.zone-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.edit.activeZoneIndex = parseInt(btn.dataset.zoneIndex, 10);
-      renderZoneTabs();
-      renderSwatchGrid();
-      renderPreview();
-    });
-  });
+function getZoneIdByIndex(zoneIndex) {
+  return getConfig().zones[zoneIndex].id;
 }
 
-function getActiveZoneId() {
-  return getConfig().zones[state.edit.activeZoneIndex].id;
-}
-
-function renderEditStyleTiles() {
-  const styles = getCurrentStyles();
-  const selectedId = getSelectedStyleId();
-  const config = getConfig();
-  const zoneIds = config.zones.map(z => z.id);
-
-  dom.editStyleTiles.innerHTML = styles.map(style => {
-    const c1 = style.colors[zoneIds[0]] || DEFAULT_COLOR;
-    const c2 = style.colors[zoneIds[1]] || DEFAULT_COLOR;
-    const c3 = style.colors[zoneIds[2]] || DEFAULT_COLOR;
-    const active = style.id === selectedId;
-    return `
-      <div class="edit-style-tile ${active ? 'active' : ''}" data-style-id="${style.id}">
-        ${style.name}
-        <div class="tile-chip" aria-hidden="true">
-          <span style="background:${c1}"></span>
-          <span style="background:${c2}"></span>
-          <span style="background:${c3}"></span>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function applyColorToStyle(hex) {
+function applyColourToZone(zoneIndex, hex) {
   const style = getSelectedStyle();
   if (!style) return;
-  const zoneId = getActiveZoneId();
+  const zoneId = getZoneIdByIndex(zoneIndex);
   style.colors[zoneId] = hex;
-  renderPreview();
-  renderSwatchGrid();
-  renderEditStyleTiles();
+  renderColourSection(zoneIndex);
 }
 
-function renderSwatchGrid() {
-  const start = state.edit.swatchPage * SWATCHES_PER_PAGE;
-  const slice = PALETTE.slice(start, start + SWATCHES_PER_PAGE);
+function renderColourSection(zoneIndex) {
   const style = getSelectedStyle();
-  const zoneId = getActiveZoneId();
-  const currentHex = style ? style.colors[zoneId] : DEFAULT_COLOR;
+  const zoneId = getZoneIdByIndex(zoneIndex);
+  const currentHex = style ? style.colors[zoneId] || DEFAULT_COLOR : DEFAULT_COLOR;
+  const container = [dom.colourPrimary, dom.colourSecondary, dom.colourTrim][zoneIndex];
+  if (!container) return;
 
-  dom.swatchGrid.innerHTML = slice.map(({ name, hex }) =>
-    `<button type="button" class="swatch ${hex === currentHex ? 'selected' : ''}" data-hex="${hex}" title="${name}" style="background:${hex}"></button>`
+  container.innerHTML = PALETTE.map(({ name, hex }) =>
+    `<button type="button" class="colour-swatch ${hex === currentHex ? 'selected' : ''}" data-hex="${hex}" data-zone-index="${zoneIndex}" title="${name}" style="background:${hex}"></button>`
   ).join('');
 
-  dom.swatchGrid.querySelectorAll('.swatch').forEach(btn => {
+  container.querySelectorAll('.colour-swatch').forEach(btn => {
     btn.addEventListener('click', () => {
-      applyColorToStyle(btn.dataset.hex);
+      applyColourToZone(parseInt(btn.dataset.zoneIndex, 10), btn.dataset.hex);
     });
   });
 }
 
-function renderSwatchDots() {
-  const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
-  dom.swatchDots.innerHTML = Array.from({ length: totalPages }, (_, i) =>
-    `<button type="button" class="swatch-dot ${i === state.edit.swatchPage ? 'active' : ''}" data-page="${i}" aria-label="Page ${i + 1}"></button>`
-  ).join('');
-
-  dom.swatchDots.querySelectorAll('.swatch-dot').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.edit.swatchPage = parseInt(btn.dataset.page, 10);
-      renderSwatchGrid();
-      renderSwatchDots();
-      updateSwatchNavState();
-    });
-  });
-}
-
-function updateSwatchNavState() {
-  const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
-  dom.swatchPrev.disabled = state.edit.swatchPage === 0;
-  dom.swatchNext.disabled = state.edit.swatchPage >= totalPages - 1;
-}
-
-function nextSwatchPage() {
-  const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
-  if (state.edit.swatchPage < totalPages - 1) {
-    state.edit.swatchPage++;
-    renderSwatchGrid();
-    renderSwatchDots();
-    updateSwatchNavState();
-  }
-}
-
-function prevSwatchPage() {
-  if (state.edit.swatchPage > 0) {
-    state.edit.swatchPage--;
-    renderSwatchGrid();
-    renderSwatchDots();
-    updateSwatchNavState();
-  }
-}
-
-function renderPreview() {
-  const config = getConfig();
-  const style = getSelectedStyle();
-  const activeIndex = state.edit.activeZoneIndex;
-
-  const zoneDivs = config.zones.map((z, i) => {
-    const hex = style ? (style.colors[z.id] || DEFAULT_COLOR) : DEFAULT_COLOR;
-    const active = i === activeIndex;
-    return `<div class="preview-zone zone-${z.id} ${active ? 'active' : 'dim'}" style="background:${hex}" data-zone="${z.id}"></div>`;
-  }).join('');
-
-  dom.previewContainer.innerHTML = `<div class="${config.previewClass}">${zoneDivs}</div>`;
+function renderColourSections() {
+  renderColourSection(0);
+  renderColourSection(1);
+  renderColourSection(2);
 }
 
 function switchGearType(gearType) {
@@ -329,25 +230,25 @@ function init() {
   dom.viewStyles = document.getElementById('view-styles');
   dom.viewEdit = document.getElementById('view-edit');
   dom.btnBack = document.getElementById('btn-back');
-  dom.zoneTabs = document.getElementById('zone-tabs');
-  dom.swatchGrid = document.getElementById('swatch-grid');
-  dom.swatchPrev = document.getElementById('swatch-prev');
-  dom.swatchNext = document.getElementById('swatch-next');
-  dom.swatchDots = document.getElementById('swatch-dots');
-  dom.previewContainer = document.getElementById('preview-container');
-  dom.editStyleTiles = document.getElementById('edit-style-tiles');
+  dom.editClose = document.getElementById('edit-close');
+  dom.editTitle = document.getElementById('edit-title');
+  dom.editTabLabel = document.getElementById('edit-tab-label');
+  dom.colourPrimary = document.getElementById('colour-primary');
+  dom.colourSecondary = document.getElementById('colour-secondary');
+  dom.colourTrim = document.getElementById('colour-trim');
 
   dom.navItems.forEach(btn => {
     btn.addEventListener('click', () => switchGearType(btn.dataset.gear));
   });
 
-  dom.btnEditStyle.addEventListener('click', enterEditView);
-  dom.btnBack.addEventListener('click', exitEditView);
-  dom.swatchPrev.addEventListener('click', prevSwatchPage);
-  dom.swatchNext.addEventListener('click', nextSwatchPage);
+  dom.btnEditStyle.addEventListener('click', (e) => {
+    e.preventDefault();
+    enterEditView();
+  });
+  if (dom.btnBack) dom.btnBack.addEventListener('click', exitEditView);
+  if (dom.editClose) dom.editClose.addEventListener('click', exitEditView);
 
   renderNav();
-  // Auto-select first style so EDIT STYLE is enabled on load
   const styles = getCurrentStyles();
   if (styles.length && !getSelectedStyleId()) {
     state.selectedStyleId[state.currentGearType] = styles[0].id;
