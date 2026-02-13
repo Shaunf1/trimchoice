@@ -1,0 +1,576 @@
+/* TOTF2 Gear Multi-Zone Customization — Prototype styles */
+
+:root {
+  --bg-dark: #1a1a1e;
+  --bg-panel: #e8e4dc;
+  --bg-panel-subtle: #d8d4cc;
+  --text-light: #f4f6f6;
+  --text-muted: #7f8c8d;
+  --text-dark: #2c2c2c;
+  --accent-red: #c0392b;
+  --accent-blue: #2e86c1;
+  --accent-blue-dim: #3d6b8a;
+  --border: rgba(0, 0, 0, 0.15);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --zone-active: rgba(46, 134, 193, 0.4);
+  --zone-dim: 0.85;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Main GEAR screen — paper-style panel */
+.gear-screen {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  min-height: 420px;
+  background: var(--bg-panel);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 1.5rem 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "nav content"
+    "footer footer";
+  gap: 0 1.5rem;
+}
+
+.gear-header {
+  grid-area: header;
+  margin-bottom: 0.5rem;
+}
+
+.gear-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent-red);
+  letter-spacing: 0.02em;
+}
+
+.gear-nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border);
+}
+
+.nav-item {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-item:hover {
+  color: var(--text-dark);
+}
+
+.nav-item.active {
+  color: var(--accent-blue);
+  background: rgba(46, 134, 193, 0.12);
+}
+
+.gear-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.content-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-edit-style {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  background: var(--bg-panel-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.btn-edit-style:hover:not(:disabled) {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: rgba(46, 134, 193, 0.08);
+}
+
+.btn-edit-style:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Style tiles */
+.style-tiles {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.style-tile {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  background: var(--bg-panel-subtle);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.style-tile:hover {
+  border-color: var(--text-muted);
+}
+
+.style-tile.selected {
+  border-color: var(--text-light);
+  box-shadow: 0 0 0 2px var(--bg-dark), 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.style-tile-mock {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* 3-segment color chip overlay on tile */
+.tile-chip {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  height: 18px;
+  display: flex;
+  gap: 2px;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.tile-chip span {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+.gear-footer {
+  grid-area: footer;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-return {
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.btn-return:hover {
+  color: var(--accent-blue-dim);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bg-panel);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.modal-close:hover {
+  color: var(--text-dark);
+  background: var(--bg-panel-subtle);
+}
+
+.modal-title {
+  margin: 0 2rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-red);
+  letter-spacing: 0.02em;
+}
+
+.modal-subtitle {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-zone-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  background: var(--bg-panel-subtle);
+  border-radius: 6px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.zone-tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.zone-tab:hover {
+  color: var(--text-dark);
+}
+
+.zone-tab.active {
+  color: var(--accent-blue);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 520px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Swatch section */
+.swatch-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swatch-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.swatch-nav {
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--accent-blue);
+  background: var(--bg-panel-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.swatch-nav:hover {
+  background: rgba(46, 134, 193, 0.15);
+}
+
+.swatch-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.swatch {
+  aspect-ratio: 1;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.swatch:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.swatch.selected {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 4px var(--accent-blue);
+}
+
+.swatch-dots {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.swatch-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.5;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.swatch-dot.active {
+  opacity: 1;
+  background: var(--accent-blue);
+}
+
+/* Preview section */
+.preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.preview-container {
+  width: 160px;
+  height: 180px;
+  background: var(--bg-panel-subtle);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Zone preview shapes — shared */
+.preview-zone {
+  transition: opacity 0.2s, filter 0.2s;
+}
+
+.preview-zone.dim {
+  opacity: var(--zone-dim);
+  filter: brightness(0.92);
+}
+
+.preview-zone.active {
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 0 0 2px var(--accent-blue);
+}
+
+/* Gloves preview: main block = BODY, bottom band = CUFF, side strip = STRIPE */
+.preview-gloves {
+  position: relative;
+  width: 100px;
+  height: 120px;
+}
+
+.preview-gloves .zone-body {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 72px;
+  border-radius: 12px 12px 8px 8px;
+}
+
+.preview-gloves .zone-cuff {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  border-radius: 0 0 20px 20px;
+}
+
+.preview-gloves .zone-stripe {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  width: 12px;
+  height: 48px;
+  border-radius: 4px;
+}
+
+/* Shorts preview: big rect = BODY, thin top = WAIST, thin vertical side = STRIPE */
+.preview-shorts {
+  position: relative;
+  width: 100px;
+  height: 120px;
+}
+
+.preview-shorts .zone-body {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.preview-shorts .zone-waist {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  border-radius: 6px 6px 0 0;
+}
+
+.preview-shorts .zone-stripe {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  width: 10px;
+  bottom: 0;
+  border-radius: 0 0 4px 0;
+}
+
+/* Boots preview: main block = BODY, upper stripe = TRIM, small patch = ACCENT */
+.preview-boots {
+  position: relative;
+  width: 80px;
+  height: 100px;
+}
+
+.preview-boots .zone-body {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 0 12px 12px;
+}
+
+.preview-boots .zone-trim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  border-radius: 8px 8px 0 0;
+}
+
+.preview-boots .zone-accent {
+  position: absolute;
+  top: 28px;
+  right: 4px;
+  width: 18px;
+  height: 24px;
+  border-radius: 4px;
+}
