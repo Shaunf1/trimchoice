@@ -106,6 +106,8 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .content-header {
@@ -248,11 +250,14 @@ body {
   color: var(--accent-blue-dim);
 }
 
-/* Content views: style selection vs edit style */
+/* Content views: same height, never change app size — scale/scroll to fit */
 .content-view {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .content-view-edit[hidden] {
@@ -263,14 +268,14 @@ body {
   display: none !important;
 }
 
-/* Edit style view — aspect ratio and scale per reference (HAIR-style modal) */
 .content-view-edit.visible {
   display: flex !important;
   flex-direction: column;
   min-width: 0;
   width: 100%;
-  /* Match main panel: wide content area, same proportion as style view */
-  min-height: 360px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Title bar: darker gray bar, full width, white text, X on right */
@@ -323,6 +328,8 @@ body {
   margin-bottom: 14px;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .colour-section {
