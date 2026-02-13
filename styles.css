@@ -246,9 +246,9 @@ body {
   display: flex !important;
   flex-direction: column;
   min-width: 0;
-  /* Retain scale: fixed max width so proportions match reference */
-  max-width: 380px;
-  min-height: 420px;
+  width: 100%;
+  /* Match main panel: wide content area, same proportion as style view */
+  min-height: 360px;
 }
 
 /* Title bar: darker gray bar, full width, white text, X on right */
@@ -350,34 +350,6 @@ body {
   border-color: #1c1c1c;
   box-shadow: 0 0 0 1px #fff, 0 0 0 3px #1c1c1c;
 }
-
-/* RETURN: oblong grey button, left triangle, white text */
-.btn-edit-return {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #fff;
-  background: #5a5a5e;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-
-.btn-edit-return:hover {
-  background: #6a6a6e;
-  color: #fff;
-}
-
-.btn-edit-return-icon {
-  font-size: 0.65rem;
-  opacity: 0.95;
-}
-
 
 /* Swatch section */
 .swatch-section {

@@ -93,7 +93,7 @@ const dom = {
   btnEditStyle: null,
   viewStyles: null,
   viewEdit: null,
-  btnBack: null,
+  btnReturn: null,
   editClose: null,
   editTabLabel: null,
   colourPrimary: null,
@@ -228,7 +228,7 @@ function init() {
   dom.btnEditStyle = document.querySelector('.btn-edit-style');
   dom.viewStyles = document.getElementById('view-styles');
   dom.viewEdit = document.getElementById('view-edit');
-  dom.btnBack = document.getElementById('btn-back');
+  dom.btnReturn = document.querySelector('.btn-return');
   dom.editClose = document.getElementById('edit-close');
   dom.editTabLabel = document.getElementById('edit-tab-label');
   dom.colourPrimary = document.getElementById('colour-primary');
@@ -243,7 +243,9 @@ function init() {
     e.preventDefault();
     enterEditView();
   });
-  if (dom.btnBack) dom.btnBack.addEventListener('click', exitEditView);
+  if (dom.btnReturn) dom.btnReturn.addEventListener('click', () => {
+    if (dom.viewEdit && !dom.viewEdit.hidden) exitEditView();
+  });
   if (dom.editClose) dom.editClose.addEventListener('click', exitEditView);
 
   renderNav();
