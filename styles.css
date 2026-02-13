@@ -37,12 +37,12 @@ body {
   padding: 1rem;
 }
 
-/* Main GEAR screen — paper-style panel */
+/* Main GEAR screen — fixed size, never changes when switching views */
 .gear-screen {
   position: relative;
   width: 100%;
   max-width: 720px;
-  min-height: 420px;
+  height: 520px;
   background: var(--bg-panel);
   border-radius: 8px;
   box-shadow: var(--shadow);
