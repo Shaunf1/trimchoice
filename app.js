@@ -49,6 +49,25 @@ const GEAR_CONFIG = {
 
 const DEFAULT_COLOR = '#7F8C8D';
 
+// Boxing glove images (Unsplash) — one per style tile
+const STYLE_IMAGES = {
+  gloves: [
+    'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=280&h=280&fit=crop',
+  ],
+  shorts: [
+    'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=280&h=280&fit=crop',
+  ],
+  boots: [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=280&h=280&fit=crop',
+    'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=280&h=280&fit=crop',
+  ],
+};
+
 function createInitialStyles(gearType) {
   const zones = GEAR_CONFIG[gearType].zones.map(z => z.id);
   return [
@@ -117,22 +136,14 @@ function renderNav() {
 function renderStyleTiles() {
   const styles = getCurrentStyles();
   const selectedId = getSelectedStyleId();
-  const config = getConfig();
-  const zoneIds = config.zones.map(z => z.id);
+  const images = STYLE_IMAGES[state.currentGearType] || STYLE_IMAGES.gloves;
 
-  dom.styleTiles.innerHTML = styles.map(style => {
+  dom.styleTiles.innerHTML = styles.map((style, i) => {
     const selected = style.id === selectedId;
-    const c1 = style.colors[zoneIds[0]] || DEFAULT_COLOR;
-    const c2 = style.colors[zoneIds[1]] || DEFAULT_COLOR;
-    const c3 = style.colors[zoneIds[2]] || DEFAULT_COLOR;
+    const imgSrc = images[i] || images[0];
     return `
       <button type="button" class="style-tile ${selected ? 'selected' : ''}" data-style-id="${style.id}">
-        <div class="style-tile-mock">${style.name}</div>
-        <div class="tile-chip" aria-hidden="true">
-          <span style="background:${c1}" title="${zoneIds[0]}"></span>
-          <span style="background:${c2}" title="${zoneIds[1]}"></span>
-          <span style="background:${c3}" title="${zoneIds[2]}"></span>
-        </div>
+        <img class="style-tile-img" src="${imgSrc}" alt="${style.name}" />
       </button>
     `;
   }).join('');
@@ -151,6 +162,12 @@ function selectStyle(styleId) {
 }
 
 function enterEditView() {
+  const selectedId = getSelectedStyleId();
+  const styles = getCurrentStyles();
+  if (!selectedId && styles.length) {
+    state.selectedStyleId[state.currentGearType] = styles[0].id;
+    renderStyleTiles();
+  }
   if (!getSelectedStyleId()) return;
   state.edit.activeZoneIndex = 0;
   state.edit.swatchPage = 0;
@@ -330,6 +347,11 @@ function init() {
   dom.swatchNext.addEventListener('click', nextSwatchPage);
 
   renderNav();
+  // Auto-select first style so EDIT STYLE is enabled on load
+  const styles = getCurrentStyles();
+  if (styles.length && !getSelectedStyleId()) {
+    state.selectedStyleId[state.currentGearType] = styles[0].id;
+  }
   renderStyleTiles();
 }
 
