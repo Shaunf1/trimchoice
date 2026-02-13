@@ -25,12 +25,50 @@
       </nav>
 
       <section class="gear-content">
-        <div class="content-header">
-          <span class="content-label">BASE</span>
-          <button type="button" class="btn-edit-style" disabled>EDIT STYLE</button>
+        <!-- View 1: Style selection -->
+        <div class="content-view content-view-styles" id="view-styles">
+          <div class="content-header">
+            <span class="content-label">BASE</span>
+            <button type="button" class="btn-edit-style" disabled>EDIT STYLE</button>
+          </div>
+          <div class="style-tiles" id="style-tiles">
+            <!-- Tiles injected by app.js -->
+          </div>
         </div>
-        <div class="style-tiles" id="style-tiles">
-          <!-- Tiles injected by app.js -->
+
+        <!-- View 2: Edit style (zone tabs + swatches + preview) -->
+        <div class="content-view content-view-edit" id="view-edit" hidden>
+          <div class="edit-header">
+            <button type="button" class="btn-back" id="btn-back">← Back</button>
+            <h2 class="edit-title">EDIT STYLE</h2>
+          </div>
+          <p class="edit-subtitle">SELECT AREA</p>
+          <div class="edit-zone-tabs" id="zone-tabs" role="tablist">
+            <!-- Zone tabs injected by app.js -->
+          </div>
+          <div class="edit-body">
+            <div class="swatch-section">
+              <div class="swatch-nav-row">
+                <button type="button" class="swatch-nav swatch-prev" id="swatch-prev" aria-label="Previous page">‹</button>
+                <div class="swatch-grid" id="swatch-grid">
+                  <!-- Swatches injected by app.js -->
+                </div>
+                <button type="button" class="swatch-nav swatch-next" id="swatch-next" aria-label="Next page">›</button>
+              </div>
+              <div class="swatch-dots" id="swatch-dots">
+                <!-- Dots injected by app.js -->
+              </div>
+            </div>
+            <div class="preview-section">
+              <div class="preview-label">PREVIEW</div>
+              <div class="preview-container" id="preview-container">
+                <!-- Preview shapes injected by app.js -->
+              </div>
+            </div>
+          </div>
+          <div class="edit-style-tiles" id="edit-style-tiles">
+            <!-- Mini style tiles with chips (injected by app.js) -->
+          </div>
         </div>
       </section>
 
@@ -38,37 +76,6 @@
         <button type="button" class="btn-return">← RETURN</button>
       </footer>
     </main>
-  </div>
-
-  <div class="modal-overlay" id="modal-overlay" hidden>
-    <div class="modal" id="edit-modal">
-      <button type="button" class="modal-close" id="modal-close" aria-label="Close">×</button>
-      <h2 class="modal-title">EDIT STYLE</h2>
-      <p class="modal-subtitle">SELECT AREA</p>
-
-      <div class="modal-zone-tabs" id="zone-tabs" role="tablist">
-        <!-- Zone tabs injected by app.js -->
-      </div>
-
-      <div class="modal-body">
-        <div class="swatch-section">
-          <button type="button" class="swatch-nav swatch-prev" id="swatch-prev" aria-label="Previous page">‹</button>
-          <div class="swatch-grid" id="swatch-grid">
-            <!-- Swatches injected by app.js -->
-          </div>
-          <button type="button" class="swatch-nav swatch-next" id="swatch-next" aria-label="Next page">›</button>
-          <div class="swatch-dots" id="swatch-dots">
-            <!-- Dots injected by app.js -->
-          </div>
-        </div>
-        <div class="preview-section">
-          <div class="preview-label">PREVIEW</div>
-          <div class="preview-container" id="preview-container">
-            <!-- Preview shapes injected by app.js -->
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script src="app.js"></script>

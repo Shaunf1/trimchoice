@@ -66,7 +66,7 @@ const state = {
     shorts: createInitialStyles('shorts'),
     boots: createInitialStyles('boots'),
   },
-  modal: {
+  edit: {
     activeZoneIndex: 0,
     swatchPage: 0,
   },
@@ -76,15 +76,16 @@ const dom = {
   navItems: null,
   styleTiles: null,
   btnEditStyle: null,
-  modalOverlay: null,
-  modal: null,
-  modalClose: null,
+  viewStyles: null,
+  viewEdit: null,
+  btnBack: null,
   zoneTabs: null,
   swatchGrid: null,
   swatchPrev: null,
   swatchNext: null,
   swatchDots: null,
   previewContainer: null,
+  editStyleTiles: null,
 };
 
 function getSelectedStyleId() {
@@ -149,34 +150,37 @@ function selectStyle(styleId) {
   renderStyleTiles();
 }
 
-function openModal() {
+function enterEditView() {
   if (!getSelectedStyleId()) return;
-  state.modal.activeZoneIndex = 0;
-  state.modal.swatchPage = 0;
-  dom.modalOverlay.hidden = false;
-  renderModalZoneTabs();
+  state.edit.activeZoneIndex = 0;
+  state.edit.swatchPage = 0;
+  dom.viewStyles.hidden = true;
+  dom.viewEdit.hidden = false;
+  renderZoneTabs();
   renderSwatchGrid();
   renderSwatchDots();
   renderPreview();
+  renderEditStyleTiles();
   updateSwatchNavState();
 }
 
-function closeModal() {
-  dom.modalOverlay.hidden = true;
+function exitEditView() {
+  dom.viewEdit.hidden = true;
+  dom.viewStyles.hidden = false;
   renderStyleTiles();
 }
 
-function renderModalZoneTabs() {
+function renderZoneTabs() {
   const config = getConfig();
-  const idx = state.modal.activeZoneIndex;
+  const idx = state.edit.activeZoneIndex;
   dom.zoneTabs.innerHTML = config.zones.map((z, i) =>
     `<button type="button" class="zone-tab ${i === idx ? 'active' : ''}" data-zone-index="${i}" role="tab">${z.label}</button>`
   ).join('');
 
   dom.zoneTabs.querySelectorAll('.zone-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.modal.activeZoneIndex = parseInt(btn.dataset.zoneIndex, 10);
-      renderModalZoneTabs();
+      state.edit.activeZoneIndex = parseInt(btn.dataset.zoneIndex, 10);
+      renderZoneTabs();
       renderSwatchGrid();
       renderPreview();
     });
@@ -184,7 +188,31 @@ function renderModalZoneTabs() {
 }
 
 function getActiveZoneId() {
-  return getConfig().zones[state.modal.activeZoneIndex].id;
+  return getConfig().zones[state.edit.activeZoneIndex].id;
+}
+
+function renderEditStyleTiles() {
+  const styles = getCurrentStyles();
+  const selectedId = getSelectedStyleId();
+  const config = getConfig();
+  const zoneIds = config.zones.map(z => z.id);
+
+  dom.editStyleTiles.innerHTML = styles.map(style => {
+    const c1 = style.colors[zoneIds[0]] || DEFAULT_COLOR;
+    const c2 = style.colors[zoneIds[1]] || DEFAULT_COLOR;
+    const c3 = style.colors[zoneIds[2]] || DEFAULT_COLOR;
+    const active = style.id === selectedId;
+    return `
+      <div class="edit-style-tile ${active ? 'active' : ''}" data-style-id="${style.id}">
+        ${style.name}
+        <div class="tile-chip" aria-hidden="true">
+          <span style="background:${c1}"></span>
+          <span style="background:${c2}"></span>
+          <span style="background:${c3}"></span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function applyColorToStyle(hex) {
@@ -194,10 +222,11 @@ function applyColorToStyle(hex) {
   style.colors[zoneId] = hex;
   renderPreview();
   renderSwatchGrid();
+  renderEditStyleTiles();
 }
 
 function renderSwatchGrid() {
-  const start = state.modal.swatchPage * SWATCHES_PER_PAGE;
+  const start = state.edit.swatchPage * SWATCHES_PER_PAGE;
   const slice = PALETTE.slice(start, start + SWATCHES_PER_PAGE);
   const style = getSelectedStyle();
   const zoneId = getActiveZoneId();
@@ -217,12 +246,12 @@ function renderSwatchGrid() {
 function renderSwatchDots() {
   const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
   dom.swatchDots.innerHTML = Array.from({ length: totalPages }, (_, i) =>
-    `<button type="button" class="swatch-dot ${i === state.modal.swatchPage ? 'active' : ''}" data-page="${i}" aria-label="Page ${i + 1}"></button>`
+    `<button type="button" class="swatch-dot ${i === state.edit.swatchPage ? 'active' : ''}" data-page="${i}" aria-label="Page ${i + 1}"></button>`
   ).join('');
 
   dom.swatchDots.querySelectorAll('.swatch-dot').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.modal.swatchPage = parseInt(btn.dataset.page, 10);
+      state.edit.swatchPage = parseInt(btn.dataset.page, 10);
       renderSwatchGrid();
       renderSwatchDots();
       updateSwatchNavState();
@@ -232,14 +261,14 @@ function renderSwatchDots() {
 
 function updateSwatchNavState() {
   const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
-  dom.swatchPrev.disabled = state.modal.swatchPage === 0;
-  dom.swatchNext.disabled = state.modal.swatchPage >= totalPages - 1;
+  dom.swatchPrev.disabled = state.edit.swatchPage === 0;
+  dom.swatchNext.disabled = state.edit.swatchPage >= totalPages - 1;
 }
 
 function nextSwatchPage() {
   const totalPages = Math.ceil(PALETTE.length / SWATCHES_PER_PAGE);
-  if (state.modal.swatchPage < totalPages - 1) {
-    state.modal.swatchPage++;
+  if (state.edit.swatchPage < totalPages - 1) {
+    state.edit.swatchPage++;
     renderSwatchGrid();
     renderSwatchDots();
     updateSwatchNavState();
@@ -247,8 +276,8 @@ function nextSwatchPage() {
 }
 
 function prevSwatchPage() {
-  if (state.modal.swatchPage > 0) {
-    state.modal.swatchPage--;
+  if (state.edit.swatchPage > 0) {
+    state.edit.swatchPage--;
     renderSwatchGrid();
     renderSwatchDots();
     updateSwatchNavState();
@@ -258,7 +287,7 @@ function prevSwatchPage() {
 function renderPreview() {
   const config = getConfig();
   const style = getSelectedStyle();
-  const activeIndex = state.modal.activeZoneIndex;
+  const activeIndex = state.edit.activeZoneIndex;
 
   const zoneDivs = config.zones.map((z, i) => {
     const hex = style ? (style.colors[z.id] || DEFAULT_COLOR) : DEFAULT_COLOR;
@@ -271,6 +300,7 @@ function renderPreview() {
 
 function switchGearType(gearType) {
   state.currentGearType = gearType;
+  exitEditView();
   renderNav();
   renderStyleTiles();
 }
@@ -279,28 +309,25 @@ function init() {
   dom.navItems = document.querySelectorAll('.nav-item');
   dom.styleTiles = document.getElementById('style-tiles');
   dom.btnEditStyle = document.querySelector('.btn-edit-style');
-  dom.modalOverlay = document.getElementById('modal-overlay');
-  dom.modal = document.getElementById('edit-modal');
-  dom.modalClose = document.getElementById('modal-close');
+  dom.viewStyles = document.getElementById('view-styles');
+  dom.viewEdit = document.getElementById('view-edit');
+  dom.btnBack = document.getElementById('btn-back');
   dom.zoneTabs = document.getElementById('zone-tabs');
   dom.swatchGrid = document.getElementById('swatch-grid');
   dom.swatchPrev = document.getElementById('swatch-prev');
   dom.swatchNext = document.getElementById('swatch-next');
   dom.swatchDots = document.getElementById('swatch-dots');
   dom.previewContainer = document.getElementById('preview-container');
+  dom.editStyleTiles = document.getElementById('edit-style-tiles');
 
   dom.navItems.forEach(btn => {
     btn.addEventListener('click', () => switchGearType(btn.dataset.gear));
   });
 
-  dom.btnEditStyle.addEventListener('click', openModal);
-  dom.modalClose.addEventListener('click', closeModal);
+  dom.btnEditStyle.addEventListener('click', enterEditView);
+  dom.btnBack.addEventListener('click', exitEditView);
   dom.swatchPrev.addEventListener('click', prevSwatchPage);
   dom.swatchNext.addEventListener('click', nextSwatchPage);
-
-  dom.modalOverlay.addEventListener('click', (e) => {
-    if (e.target === dom.modalOverlay) closeModal();
-  });
 
   renderNav();
   renderStyleTiles();
