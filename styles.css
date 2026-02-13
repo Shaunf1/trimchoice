@@ -237,134 +237,147 @@ body {
   display: none !important;
 }
 
-.content-view-edit.visible {
-  display: flex !important;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .content-view-styles[hidden] {
   display: none !important;
 }
 
-/* Edit style view — Primary / Secondary / Trim colour sections */
-.edit-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.edit-header-left {
-  display: flex;
+/* Edit style view — aspect ratio and scale per reference (HAIR-style modal) */
+.content-view-edit.visible {
+  display: flex !important;
   flex-direction: column;
-  gap: 0.15rem;
+  min-width: 0;
+  /* Retain scale: fixed max width so proportions match reference */
+  max-width: 380px;
+  min-height: 420px;
 }
 
-.edit-title {
-  margin: 0;
-  font-size: 1.35rem;
+/* Title bar: darker gray bar, full width, white text, X on right */
+.edit-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px 0 12px;
+  margin: 0 0 12px 0;
+  background: #4a4a4e;
+  border-radius: 4px 4px 0 0;
+  flex-shrink: 0;
+}
+
+.edit-title-bar-label {
+  font-size: 0.875rem;
   font-weight: 700;
-  color: var(--accent-red);
-  letter-spacing: 0.02em;
-}
-
-.edit-tab-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  color: #fff;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .edit-close {
-  width: 32px;
-  height: 32px;
-  font-size: 1.5rem;
+  width: 28px;
+  height: 28px;
+  font-size: 1.25rem;
   line-height: 1;
-  color: var(--text-muted);
-  background: none;
+  color: #fff;
+  background: transparent;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 0;
-  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
 }
 
 .edit-close:hover {
-  color: var(--text-dark);
-  background: var(--bg-panel-subtle);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .edit-colour-sections {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex: 1;
+  min-height: 0;
 }
 
 .colour-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .colour-section-label {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-dark);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
 }
 
+/* 6 columns x 2 rows = 12 swatches; small rectangular blocks, thin black borders */
 .colour-section-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  max-width: 320px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .colour-swatch {
+  width: 100%;
   aspect-ratio: 1;
-  border: 2px solid var(--border);
-  border-radius: 6px;
+  max-width: 44px;
+  max-height: 44px;
+  border: 1px solid #1c1c1c;
+  border-radius: 0;
   cursor: pointer;
   padding: 0;
-  transition: transform 0.1s, box-shadow 0.15s;
+  transition: box-shadow 0.15s;
 }
 
 .colour-swatch:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .colour-swatch.selected {
-  border-width: 3px;
-  border-color: var(--text-dark);
-  box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 5px var(--text-dark);
+  border-width: 2px;
+  border-color: #1c1c1c;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 3px #1c1c1c;
 }
 
+/* RETURN: oblong grey button, left triangle, white text */
 .btn-edit-return {
-  padding: 0.35rem 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--accent-blue);
-  background: none;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #fff;
+  background: #5a5a5e;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   cursor: pointer;
-  transition: color 0.15s;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
 }
 
 .btn-edit-return:hover {
-  color: var(--accent-blue-dim);
+  background: #6a6a6e;
+  color: #fff;
 }
 
-@media (max-width: 520px) {
-  .edit-body {
-    grid-template-columns: 1fr;
-  }
+.btn-edit-return-icon {
+  font-size: 0.65rem;
+  opacity: 0.95;
 }
+
 
 /* Swatch section */
 .swatch-section {

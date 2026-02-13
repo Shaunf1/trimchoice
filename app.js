@@ -95,7 +95,6 @@ const dom = {
   viewEdit: null,
   btnBack: null,
   editClose: null,
-  editTitle: null,
   editTabLabel: null,
   colourPrimary: null,
   colourSecondary: null,
@@ -231,7 +230,6 @@ function init() {
   dom.viewEdit = document.getElementById('view-edit');
   dom.btnBack = document.getElementById('btn-back');
   dom.editClose = document.getElementById('edit-close');
-  dom.editTitle = document.getElementById('edit-title');
   dom.editTabLabel = document.getElementById('edit-tab-label');
   dom.colourPrimary = document.getElementById('colour-primary');
   dom.colourSecondary = document.getElementById('colour-secondary');
